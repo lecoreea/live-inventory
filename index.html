@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Live PDF Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas { border: 1px solid #ccc; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h2>Live Updating PDF</h2>
+    <canvas id="pdf-canvas"></canvas>
+
+    <script>
+        const pdfUrl = "live-inventory.pdf"; // Path to your PDF
+
+        function renderPDF() {
+            pdfjsLib.getDocument(pdfUrl + "?t=" + new Date().getTime()).promise.then(pdf => {
+                pdf.getPage(1).then(page => {
+                    let canvas = document.getElementById("pdf-canvas");
+                    let context = canvas.getContext("2d");
+                    let viewport = page.getViewport({ scale: 1.5 });
+
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    page.render({ canvasContext: context, viewport: viewport });
+                });
+            }).catch(error => {
+                console.error("Error loading PDF:", error);
+            });
+        }
+
+        renderPDF();
+        setInterval(renderPDF, 5000); // Refresh every 5 seconds
+    </script>
+
+</body>
+</html>
